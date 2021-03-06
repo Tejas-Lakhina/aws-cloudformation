@@ -1,0 +1,57 @@
+############################################################
+#   File Name  : Security_Group_EC2.yaml                   #
+#                                                          #
+#   Created by : Tejas Lakhina                             #
+#                                                          #
+#   Date       : 03/06/2021                                #
+#                                                          #
+############################################################
+
+
+Parameters:
+  SecurityGroupDescription:
+    Description: Security Group Description
+    Type: String
+
+Resources:
+  MyNewInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: <Availability_Zone>                 //ap-south-1a
+      ImageId: <Image_ID>                                   //ami-0eeb03e72075b9bcc
+      InstanceType: <Instance_Type>                         //t2.micro(Free Tier)
+      SecurityGroups:
+        - !Ref SSHSecurityGroup                             //Invoking the value of the Resource defined with the name SSHSecurityGroup
+        - !Ref ServerSecurityGroup                          //Invoking the value of the Resource defined with the name ServerSecurityGroup
+
+  # an elastic IP for our instance
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref MyNewInstance                        //Invoking the value of the Resource defined with the name MyNewInstance
+
+  # First EC2 security group
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0                                   //Can SSH to the EC2 Instance, which the security group is associated to, from any IP Address
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+
+  # our second EC2 security group
+  ServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Ref SecurityGroupDescription
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0                                   //Can HTTP to the EC2 Instance, which the security group is associated to, from any IP Address
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 192.168.1.1/32
