@@ -1,0 +1,16 @@
+############################################################
+#   File Name  : Simple_EC2_Provisioning.yaml              #
+#                                                          #
+#   Created by : Tejas Lakhina                             #
+#                                                          #
+#   Date       : 03/06/2021                                #
+#                                                          #
+############################################################
+
+Resources:
+  MyFirstInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: <Availability_Zone>                 //ap-south-1a
+      ImageId: <Image_ID>                                   //ami-0eeb03e72075b9bcc
+      InstanceType: <Instance_Type>                         //t2.micro(Free Tier)
